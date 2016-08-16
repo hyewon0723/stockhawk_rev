@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.ui;
+package com.luke_kim.android.stockhawk.ui;
 
 import android.app.LoaderManager;
 import android.content.Context;
@@ -21,19 +21,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.data.QuoteColumns;
-import com.sam_chordas.android.stockhawk.data.QuoteProvider;
-import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
-import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
-import com.sam_chordas.android.stockhawk.rest.Utils;
-import com.sam_chordas.android.stockhawk.service.StockIntentService;
-import com.sam_chordas.android.stockhawk.service.StockTaskService;
+import com.luke_kim.android.stockhawk.R;
+import com.luke_kim.android.stockhawk.data.QuoteColumns;
+import com.luke_kim.android.stockhawk.data.QuoteProvider;
+import com.luke_kim.android.stockhawk.rest.QuoteCursorAdapter;
+import com.luke_kim.android.stockhawk.rest.RecyclerViewItemClickListener;
+import com.luke_kim.android.stockhawk.rest.Utils;
+import com.luke_kim.android.stockhawk.service.StockIntentService;
+import com.luke_kim.android.stockhawk.service.StockTaskService;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
-import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.luke_kim.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -84,8 +84,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
-                //TODO:
-                // do something on item click
+                Context context = v.getContext();
+                Intent intent = new Intent(context, MyStockDetailActivity.class);
+                intent.putExtra(MyStockDetailActivityFragment.ARG_STOCK, mCursorAdapter.getStock(position));
+                context.startActivity(intent);
               }
             }));
     recyclerView.setAdapter(mCursorAdapter);

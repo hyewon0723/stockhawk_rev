@@ -1,6 +1,4 @@
-package com.sam_chordas.android.stockhawk.touch_helper;
-
-import android.view.View;
+package com.luke_kim.android.stockhawk.touch_helper;
 
 /**
  * Created by sam_chordas on 10/6/15.

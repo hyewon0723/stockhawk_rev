@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk.rest;
+package com.luke_kim.android.stockhawk.rest;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -11,11 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sam_chordas.android.stockhawk.R;
-import com.sam_chordas.android.stockhawk.data.QuoteColumns;
-import com.sam_chordas.android.stockhawk.data.QuoteProvider;
-import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
-import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
+import com.luke_kim.android.stockhawk.R;
+import com.luke_kim.android.stockhawk.data.QuoteColumns;
+import com.luke_kim.android.stockhawk.data.QuoteProvider;
+import com.luke_kim.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
+import com.luke_kim.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
 
 /**
  * Created by sam_chordas on 10/6/15.
@@ -70,6 +70,12 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     } else{
       viewHolder.change.setText(cursor.getString(cursor.getColumnIndex("change")));
     }
+  }
+
+  public String getStock(int position) {
+    Cursor c = getCursor();
+    c.moveToPosition(position);
+    return c.getString(c.getColumnIndex(QuoteColumns.SYMBOL));
   }
 
   @Override public void onItemDismiss(int position) {
