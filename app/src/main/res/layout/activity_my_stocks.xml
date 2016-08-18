@@ -27,4 +27,6 @@
       fab:layout_anchor="recycler_view"
       fab:layout_anchorGravity="bottom | end"
       />
+
+  <include layout="@layout/no_network" />
 </FrameLayout>

@@ -1,16 +1,19 @@
 package com.luke_kim.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -20,7 +23,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.gcm.GcmNetworkManager;
+import com.google.android.gms.gcm.PeriodicTask;
+import com.google.android.gms.gcm.Task;
 import com.luke_kim.android.stockhawk.R;
 import com.luke_kim.android.stockhawk.data.QuoteColumns;
 import com.luke_kim.android.stockhawk.data.QuoteProvider;
@@ -29,11 +36,8 @@ import com.luke_kim.android.stockhawk.rest.RecyclerViewItemClickListener;
 import com.luke_kim.android.stockhawk.rest.Utils;
 import com.luke_kim.android.stockhawk.service.StockIntentService;
 import com.luke_kim.android.stockhawk.service.StockTaskService;
-import com.google.android.gms.gcm.GcmNetworkManager;
-import com.google.android.gms.gcm.PeriodicTask;
-import com.google.android.gms.gcm.Task;
-import com.melnykov.fab.FloatingActionButton;
 import com.luke_kim.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
+import com.melnykov.fab.FloatingActionButton;
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
@@ -51,31 +55,42 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
   private Cursor mCursor;
-  boolean isConnected;
+  View mNoConnectionView;
+  ConnectivityManager cm;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mContext = this;
-    ConnectivityManager cm =
-        (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-    isConnected = activeNetwork != null &&
-        activeNetwork.isConnectedOrConnecting();
+    BroadcastReceiver receiver = new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        Toast.makeText(getApplicationContext(),getResources().getString(R.string.wrong_symbol), Toast.LENGTH_LONG).show();
+      }
+    };
+    LocalBroadcastManager.getInstance(this)
+            .registerReceiver(receiver, new IntentFilter("myBroadcastIntent"));
+
+    mContext = this;
+    cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
     setContentView(R.layout.activity_my_stocks);
+    mNoConnectionView = findViewById(R.id.no_connection_view);
+
     // The intent service is for executing immediate pulls from the Yahoo API
     // GCMTaskService can only schedule tasks, they cannot execute immediately
     mServiceIntent = new Intent(this, StockIntentService.class);
     if (savedInstanceState == null){
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
-      if (isConnected){
+      if (isConnected()){
         startService(mServiceIntent);
       } else{
         networkToast();
       }
     }
+
     RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
     recyclerView.setLayoutManager(new LinearLayoutManager(this));
     getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
@@ -97,7 +112,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     fab.attachToRecyclerView(recyclerView);
     fab.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        if (isConnected){
+        if (isConnected()){
           new MaterialDialog.Builder(mContext).title(R.string.symbol_search)
               .content(R.string.content_test)
               .inputType(InputType.TYPE_CLASS_TEXT)
@@ -108,10 +123,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                   Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                       new String[] { QuoteColumns.SYMBOL }, QuoteColumns.SYMBOL + "= ?",
                       new String[] { input.toString() }, null);
+
                   if (c.getCount() != 0) {
                     Toast toast =
-                        Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
-                            Toast.LENGTH_LONG);
+                            Toast.makeText(MyStocksActivity.this, "This stock is already saved!",
+                                    Toast.LENGTH_LONG);
                     toast.setGravity(Gravity.CENTER, Gravity.CENTER, 0);
                     toast.show();
                     return;
@@ -136,7 +152,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     mItemTouchHelper.attachToRecyclerView(recyclerView);
 
     mTitle = getTitle();
-    if (isConnected){
+    if (isConnected()){
       long period = 3600L;
       long flex = 10L;
       String periodicTag = "periodic";
@@ -157,6 +173,11 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
   }
 
+  public boolean isConnected() {
+    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+    return (activeNetwork != null &&
+            activeNetwork.isConnectedOrConnecting());
+  }
 
   @Override
   public void onResume() {
@@ -205,6 +226,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
 
   @Override
   public Loader<Cursor> onCreateLoader(int id, Bundle args){
+    mNoConnectionView.setVisibility(View.GONE);
     // This narrows the return to only the stocks that are most current.
     return new CursorLoader(this, QuoteProvider.Quotes.CONTENT_URI,
         new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
@@ -217,6 +239,13 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data){
     mCursorAdapter.swapCursor(data);
+
+    if (!isConnected()) {
+      mNoConnectionView.setVisibility(View.VISIBLE);
+    } else {
+      mNoConnectionView.setVisibility(View.GONE);
+    }
+
     mCursor = data;
   }
 

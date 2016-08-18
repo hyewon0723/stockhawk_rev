@@ -2,12 +2,15 @@ package com.luke_kim.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
 import android.util.Log;
+
 import com.luke_kim.android.stockhawk.data.QuoteColumns;
 import com.luke_kim.android.stockhawk.data.QuoteProvider;
-import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by sam_chordas on 10/8/15.
@@ -30,14 +33,25 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
-          batchOperations.add(buildBatchOperation(jsonObject));
+          if (jsonObject.getString("Bid") == "null") {
+            return null;
+          }
+          else {
+            batchOperations.add(buildBatchOperation(jsonObject));
+          }
+
         } else{
           resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
 
           if (resultsArray != null && resultsArray.length() != 0){
             for (int i = 0; i < resultsArray.length(); i++){
               jsonObject = resultsArray.getJSONObject(i);
-              batchOperations.add(buildBatchOperation(jsonObject));
+              if (jsonObject.getString("Bid") == "null") {
+                return null;
+              }
+              else {
+                batchOperations.add(buildBatchOperation(jsonObject));
+              }
             }
           }
         }

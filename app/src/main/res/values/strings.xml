@@ -10,5 +10,8 @@
     <string name="input_hint">FB</string>
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="no_network_title">Uh-oh!</string>
+    <string name="no_network_msg">This app requires an internet connection. Please check your network setting and try again.</string>
     <string name="title_activity_my_stock_detail">MyStockDetailActivity</string>
+    <string name="wrong_symbol">Uh-oh! You entered wrong symbol. Please try again.</string>
 </resources>

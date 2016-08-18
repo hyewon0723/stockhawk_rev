@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,6 @@ public class MyStockDetailActivityFragment extends Fragment implements LoaderMan
         if (getArguments().containsKey(ARG_STOCK)) {
             mStock = getArguments().getString(ARG_STOCK);
         }
-        Log.v("Luke", "MyStockDetailActivityFragmenet!!!!!! mStock "+mStock);
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 //        getLoaderManager().initLoader(CURSOR_LOADER_ID_FOR_LINE_CHART, null, this);
     }
