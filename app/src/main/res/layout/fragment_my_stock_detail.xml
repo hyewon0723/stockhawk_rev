@@ -58,4 +58,18 @@
 
     </android.support.v7.widget.GridLayout>
 
+    <FrameLayout
+        android:id="@android:id/tabcontent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <lecho.lib.hellocharts.view.LineChartView
+            android:id="@+id/stock_chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:visibility="invisible" />
+
+    </FrameLayout>
+
 </LinearLayout>
