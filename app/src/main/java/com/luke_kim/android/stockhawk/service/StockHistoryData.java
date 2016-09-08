@@ -26,18 +26,15 @@ public class StockHistoryData {
     ArrayList<String> stockPrices;
     private static final String TAG = StockHistoryData.class.getSimpleName();
 
-    //to form the url for any symbol
     final String BASE_URL = "http://chartapi.finance.yahoo.com/instrument/1.0/";
     final String END_URL = "/chartdata;type=quote;range=1y/json";
 
 
-    //to parse the json data..
     private static final String JSON_SERIES = "series";
     private static final String JSON_DATE = "Date";
     private static final String JSON_CLOSE = "close";
 
 
-    //to indicate errors incurred during parsing.
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STATUS_OK, STATUS_ERROR_JSON, STATUS_ERROR_NO_NETWORK, STATUS_ERROR_PARSE
             , STATUS_ERROR_SERVER, STATUS_ERROR_UNKNOWN})
@@ -94,32 +91,13 @@ public class StockHistoryData {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-
-//                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-//                            setHistoricalDataStatus(STATUS_ERROR_NO_NETWORK);
-//                        } else if (error instanceof ServerError) {
-//                            setHistoricalDataStatus(STATUS_ERROR_SERVER);
-//                        } else if (error instanceof NetworkError) {
-//                            setHistoricalDataStatus( STATUS_ERROR_UNKNOWN);
-//                        } else if (error instanceof ParseError) {
-//                            setHistoricalDataStatus(STATUS_ERROR_PARSE);
-//                        }
-
-                        if (callback != null) {
-                            callback.onFailure();
-                        }
                     }
                 }
         );
         AppController.getInstance().addToRequestQueue(request, TAG);
     }
 
-
-    /**
-     * Interface to interact with the callee class to notify regarding success, or errors if any.
-     */
     public interface StockHistoryDataCallback {
         void onSuccess(ArrayList list1, ArrayList list2);
-        void onFailure();
     }
 }

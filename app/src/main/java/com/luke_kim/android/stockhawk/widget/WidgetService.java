@@ -29,9 +29,8 @@ class WidgetDataFactory implements RemoteViewsService.RemoteViewsFactory {
     int mWidgetId;
 
     public WidgetDataFactory(Context context, Intent intent) {
+        mWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mContext = context;
-        mWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
-                AppWidgetManager.INVALID_APPWIDGET_ID);
     }
 
     @Override
@@ -55,27 +54,23 @@ class WidgetDataFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public RemoteViews getViewAt(int position) {
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_stock_list);
+        RemoteViews remoteView = new RemoteViews(mContext.getPackageName(), R.layout.widget_stock_list);
         if (mCursor.moveToPosition(position)) {
-            rv.setTextViewText(R.id.stock_symbol,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
-            rv.setTextViewText(R.id.bid_price,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+            remoteView.setTextViewText(R.id.bid_price, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
+            remoteView.setTextViewText(R.id.stock_symbol, mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+
             String change = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.CHANGE));
-            rv.setTextViewText(R.id.stock_change,
-                    change);
+            remoteView.setTextViewText(R.id.stock_change, change);
             if (change != null){
                 String sign = change.substring(0,1);
                 if (sign.equals("+")) {
-                    rv.setInt(R.id.stock_change, "setBackgroundResource",
-                            R.drawable.percent_change_pill_green);
+                    remoteView.setInt(R.id.stock_change, "setBackgroundResource", R.drawable.percent_change_pill_green);
                 } else {
-                    rv.setInt(R.id.stock_change, "setBackgroundResource",
-                            R.drawable.percent_change_pill_red);
+                    remoteView.setInt(R.id.stock_change, "setBackgroundResource", R.drawable.percent_change_pill_red);
                 }
             }
         }
-        return rv;
+        return remoteView;
     }
 
     @Override
@@ -100,8 +95,7 @@ class WidgetDataFactory implements RemoteViewsService.RemoteViewsFactory {
         if (mCursor != null) {
             mCursor.close();
         }
-        mCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
-                QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP}, QuoteColumns.ISCURRENT + " = ?", new String[]{"1"}, null);
+        mCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI, new String[]{QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE, QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP}, QuoteColumns.ISCURRENT + " = ?", new String[]{"1"}, null);
     }
 
 

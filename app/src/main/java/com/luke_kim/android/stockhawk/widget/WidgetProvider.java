@@ -24,8 +24,7 @@ public class WidgetProvider extends AppWidgetProvider {
 
     void updateWidget(Context context, AppWidgetManager appWidgetManager,
                       int appWidgetId) {
-        RemoteViews rv = new RemoteViews(context.getPackageName(),
-                R.layout.widget_stock);
+        RemoteViews rv = new RemoteViews(context.getPackageName(),R.layout.widget_stock);
         Intent adapter = new Intent(context, WidgetService.class);
         adapter.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         rv.setRemoteAdapter(R.id.stock_list, adapter);

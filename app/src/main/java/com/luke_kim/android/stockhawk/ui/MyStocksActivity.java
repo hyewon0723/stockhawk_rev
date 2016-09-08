@@ -54,7 +54,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
   private static final int CURSOR_LOADER_ID = 0;
   private QuoteCursorAdapter mCursorAdapter;
   private Context mContext;
-  private Cursor mCursor;
   View mNoConnectionView;
   ConnectivityManager cm;
 
@@ -245,8 +244,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     } else {
       mNoConnectionView.setVisibility(View.GONE);
     }
-
-    mCursor = data;
   }
 
   @Override
