@@ -30,6 +30,7 @@ public class Utils {
       if (jsonObject != null && jsonObject.length() != 0){
         jsonObject = jsonObject.getJSONObject("query");
         int count = Integer.parseInt(jsonObject.getString("count"));
+        //For invalid symbol, return null list so that we can notify back to Activity.
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");

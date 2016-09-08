@@ -65,6 +65,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     BroadcastReceiver receiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
+        //Handle wrong symbol.
         Toast.makeText(getApplicationContext(),getResources().getString(R.string.wrong_symbol), Toast.LENGTH_LONG).show();
       }
     };
@@ -83,6 +84,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     if (savedInstanceState == null){
       // Run the initialize task service so that some stocks appear upon an empty database
       mServiceIntent.putExtra("tag", "init");
+      //Handle unavailable network connection
       if (isConnected()){
         startService(mServiceIntent);
       } else{
@@ -98,6 +100,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     recyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
             new RecyclerViewItemClickListener.OnItemClickListener() {
               @Override public void onItemClick(View v, int position) {
+                //Send selected stock symbol to DetailActivity
                 Context context = v.getContext();
                 Intent intent = new Intent(context, MyStockDetailActivity.class);
                 intent.putExtra(MyStockDetailActivityFragment.ARG_STOCK, mCursorAdapter.getStock(position));

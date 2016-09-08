@@ -80,7 +80,7 @@ public class MyStockDetailActivityFragment extends Fragment implements LoaderMan
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (loader.getId() == CURSOR_LOADER_ID && data != null && data.moveToFirst()) {
-
+            //load data associate with selected symbol
             String symbol = data.getString(data.getColumnIndex(QuoteColumns.SYMBOL));
             mSymbolView.setText(symbol);
             mPriceView.setText(data.getString(data.getColumnIndex(QuoteColumns.BIDPRICE)));
@@ -98,8 +98,9 @@ public class MyStockDetailActivityFragment extends Fragment implements LoaderMan
     }
 
     public void onSuccess(ArrayList dates, ArrayList stockPrices) {
+        List<PointValue> lineValues = new ArrayList<>();
         List<AxisValue> axisValuesX = new ArrayList<>();
-        List<PointValue> pointValues = new ArrayList<>();
+
 
         for (int i = 0 ; i <dates.size();  i++) {
             String date = (String)dates.get(i);
@@ -107,7 +108,7 @@ public class MyStockDetailActivityFragment extends Fragment implements LoaderMan
             String y = (String)stockPrices.get(i);
             PointValue pointValue = new PointValue(i,Float.valueOf(y));
             pointValue.setLabel(date);
-            pointValues.add(pointValue);
+            lineValues.add(pointValue);
             if (i == 0 || i % (dates.size()/ 3) == 0) {
                 AxisValue axisValueX = new AxisValue(i);
                 axisValueX.setLabel(date);
@@ -116,7 +117,7 @@ public class MyStockDetailActivityFragment extends Fragment implements LoaderMan
         }
 
         //Drawing the chart and populate the data
-        Line line = new Line(pointValues).setColor(Color.rgb(102,178,255)).setCubic(false);
+        Line line = new Line(lineValues).setColor(Color.rgb(102,178,255)).setCubic(false);
         List<Line> lines = new ArrayList<>();
         lines.add(line);
         LineChartData lineChartData = new LineChartData();
