@@ -17,4 +17,5 @@
     <string name="widget_description" translatable="true">Widget of stock list</string>
     <string name="widget_title" translatable="true">My Stock Portfolio</string>
     <string name="action_change_units_description" translatable="true">Change unit of stock update</string>
+    <string name="saved_msg" translatable="true">This stock is already saved!</string>
 </resources>
